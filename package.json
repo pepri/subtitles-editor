@@ -1,0 +1,53 @@
+{
+    "name": "subtitles-editor",
+    "displayName": "Subtitles Editor",
+    "description": "Edit SRT subtitles in Visual Studio Code.",
+    "version": "0.0.1",
+    "publisher": "pepri",
+    "repository": "https://github.com/pepri/subtitles-editor.git",
+    "engines": {
+        "vscode": "^1.25.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onCommand:extension.shift",
+        "onCommand:extension.linearCorrection"
+    ],
+    "main": "./out/extension",
+    "contributes": {
+        "languages": [{
+            "id": "subrip",
+            "aliases": ["SubRip Text", "subrip"],
+            "extensions": [".srt"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "subrip",
+            "scopeName": "source.subrip",
+            "path": "./syntaxes/subrip.tmLanguage.json"
+        }],
+        "commands": [{
+            "command": "extension.shift",
+            "title": "Subtitles: Shift"
+        }, {
+            "command": "extension.linearCorrection",
+            "title": "Subtitles: Linear Correction"
+        }]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6",
+        "tslint": "^5.8.0",
+        "@types/node": "^7.0.43",
+        "@types/mocha": "^2.2.42"
+    }
+}

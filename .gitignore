@@ -1,0 +1,8 @@
+.*
+!.gitignore
+!.gitattributes
+!.vscode/
+!.vscodeignore
+out
+node_modules
+*.vsix
