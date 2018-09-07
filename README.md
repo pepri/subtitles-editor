@@ -15,7 +15,7 @@ This editor allows you to make edits to SubRip Text (SRT) files with subtitles -
 
 Use command **Subtitles: Shift** and enter offset time to shift subtitles. The format is "HH:mm:ss,zzz". You can use negative time if subtitles are too late.
 
-With **Subtitles: Renumber**, you can renumber the frames using the sequence wuth specified start index. After selecting this options, enter the start of the sequence (usually `1`) and it will be renumbered accordingly.
+With **Subtitles: Renumber**, you can renumber the frames using the sequence with specified start index. After selecting this options, enter the start of the sequence (usually `1`) and it will be renumbered accordingly.
 
 The command **Subtitles: Linear Correction** prompts you for two timestamp mappings. The input is in form "original timestamp -> new timestamp". Pick one point from the beginning of the movie and second one from the end of the movie to get the best approximation.
 
