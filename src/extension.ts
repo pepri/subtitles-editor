@@ -6,9 +6,11 @@ import * as languages from './languages.json';
 import { URL } from 'url';
 
 const timeRegex = /^([+\-]?)(\d{2}):(\d{2}):(\d{2})[,.](\d{3})$/;
+const sequenceRegex = /^([+\-]?)(\d+)$/;
 const timeMappingRegex = /^\d{2}:\d{2}:\d{2}[,.]\d{3} -> \d{2}:\d{2}:\d{2}[,.]\d{3}$/;
 const timelineRegex = /^\d{2}:\d{2}:\d{2}[,.]\d{3} --> \d{2}:\d{2}:\d{2}[,.]\d{3}$/;
 const doNotTranslateRegex = /^(?:\s*|(\d+)|\d{2}:\d{2}:\d{2}[,.]\d{3} --> \d{2}:\d{2}:\d{2}[,.]\d{3})$/;
+const emptyRegex = /^\s*$/;
 
 function parseTime(value: string): number {
 	if (!value) {
@@ -82,6 +84,50 @@ async function shift() {
 				const timeline = line.text.split(' --> ')
 					.map(x => formatTime(parseTime(x) + offset));
 				workspaceEdit.replace(documentUri, line.range, timeline.join(' --> '));
+			}
+		}
+	}
+
+	await vscode.workspace.applyEdit(workspaceEdit);
+
+	return true;
+}
+
+async function renumber() {
+	const textEditor = vscode.window.activeTextEditor;
+
+	if (typeof textEditor === 'undefined') {
+		return false;
+	}
+
+	const inputBox = {
+		placeHolder: 'Sequence start index',
+		prompt: 'Enter the start index to renumber the sequence.',
+		value: '1',
+		valueSelection: [0, 1] as [number, number],
+		validateInput: async (value: string) => sequenceRegex.test(value) ? null : 'Offset has to be a number.'
+	};
+
+	const value = await vscode.window.showInputBox(inputBox);
+
+	if (typeof value === 'undefined') {
+		return false;
+	}
+
+	let offset = Number(value);
+	const workspaceEdit = new vscode.WorkspaceEdit();
+	const documentUri = textEditor.document.uri;
+	const selections = !textEditor.selection.isEmpty
+		? textEditor.selections
+		: [new vscode.Selection(textEditor.document.positionAt(0), textEditor.document.lineAt(textEditor.document.lineCount - 1).range.end)];
+
+	for (const selection of selections) {
+		for (let lineIndex = selection.start.line; lineIndex <= selection.end.line; ++lineIndex) {
+			const line = textEditor.document.lineAt(lineIndex);
+			const previousLineText = lineIndex > 0 ? textEditor.document.lineAt(lineIndex - 1).text : '';
+			if (sequenceRegex.test(line.text) && emptyRegex.test(previousLineText)) {
+				workspaceEdit.replace(documentUri, line.range, String(offset));
+				++offset;
 			}
 		}
 	}
@@ -272,6 +318,7 @@ async function httpGet(url: string): Promise<string> {
 
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('extension.shift', shift));
+	context.subscriptions.push(vscode.commands.registerCommand('extension.renumber', renumber));
 	context.subscriptions.push(vscode.commands.registerCommand('extension.linearCorrection', linearCorrection));
 	context.subscriptions.push(vscode.commands.registerCommand('extension.translate', translate));
 }

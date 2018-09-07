@@ -2,7 +2,7 @@
     "name": "subtitles-editor",
     "displayName": "Subtitles Editor",
     "description": "Edit SRT subtitles in Visual Studio Code.",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "publisher": "pepri",
     "repository": "https://github.com/pepri/subtitles-editor.git",
     "engines": {
@@ -13,6 +13,7 @@
     ],
     "activationEvents": [
         "onCommand:extension.shift",
+        "onCommand:extension.renumber",
         "onCommand:extension.linearCorrection",
         "onCommand:extension.translate"
     ],
@@ -42,6 +43,10 @@
             {
                 "command": "extension.shift",
                 "title": "Subtitles: Shift"
+            },
+            {
+                "command": "extension.renumber",
+                "title": "Subtitles: Renumber"
             },
             {
                 "command": "extension.linearCorrection",
