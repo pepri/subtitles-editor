@@ -15,3 +15,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [1.0.1] - 2018-09-06
 
 - Added option to renumber the sequence of the frames.
+
+## [1.0.2] - 2019-02-08
+
+- Updated dependencies.
