@@ -19,3 +19,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [1.0.2] - 2019-02-08
 
 - Updated dependencies.
+
+## [1.0.3] - 2019-05-05
+
+- Updated dependencies.
+- Added option to reorder the frames based on their sequence number.

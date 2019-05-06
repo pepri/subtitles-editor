@@ -137,6 +137,60 @@ async function renumber() {
 	return true;
 }
 
+interface Frame {
+	lineIndex: number;
+	sequence: number;
+	lines: vscode.TextLine[];
+}
+
+async function reorder() {
+	const textEditor = vscode.window.activeTextEditor;
+
+	if (typeof textEditor === 'undefined') {
+		return false;
+	}
+
+	const workspaceEdit = new vscode.WorkspaceEdit();
+	const documentUri = textEditor.document.uri;
+	const selections = !textEditor.selection.isEmpty
+		? textEditor.selections
+		: [new vscode.Selection(textEditor.document.positionAt(0), textEditor.document.lineAt(textEditor.document.lineCount - 1).range.end)];
+
+	for (const selection of selections) {
+		const frames: Frame[] = [];
+		let frame: Frame | null = null;
+		for (let lineIndex = selection.start.line; lineIndex <= selection.end.line; ++lineIndex) {
+			const line = textEditor.document.lineAt(lineIndex);
+			const previousLineText = lineIndex > 0 ? textEditor.document.lineAt(lineIndex - 1).text : '';
+			if (sequenceRegex.test(line.text) && emptyRegex.test(previousLineText)) {
+				frame = {
+					lineIndex,
+					sequence: Number(line.text),
+					lines: [line]
+				};
+				frames.push(frame);
+			} else {
+				if (!frame) {
+					frame = {
+						lineIndex,
+						sequence: Number.NEGATIVE_INFINITY,
+						lines: []
+					};
+					frames.push(frame);
+				}
+				frame.lines.push(line);
+			}
+		}
+		frames.sort((a, b) => a.sequence !== b.sequence ? a.sequence - b.sequence : a.lineIndex - b.lineIndex);
+		const lines = frames.reduce((acc, frame) => { acc.push(...frame.lines.map(line => line.text + '\n')); return acc; }, [] as string[]);
+		workspaceEdit.replace(documentUri, selection, lines.join(''));
+	}
+
+	await vscode.workspace.applyEdit(workspaceEdit);
+
+	return true;
+}
+
 function findFirstTime(textDocument: vscode.TextDocument, lineNumbers: number[]) {
 	for (const lineNumber of lineNumbers) {
 		const line = textDocument.lineAt(lineNumber);
@@ -319,6 +373,7 @@ async function httpGet(url: string): Promise<string> {
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('extension.shift', shift));
 	context.subscriptions.push(vscode.commands.registerCommand('extension.renumber', renumber));
+	context.subscriptions.push(vscode.commands.registerCommand('extension.reorder', reorder));
 	context.subscriptions.push(vscode.commands.registerCommand('extension.linearCorrection', linearCorrection));
 	context.subscriptions.push(vscode.commands.registerCommand('extension.translate', translate));
 }

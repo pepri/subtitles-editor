@@ -7,6 +7,7 @@ This editor allows you to make edits to SubRip Text (SRT) files with subtitles -
 - Colorizer for SubRip Text (SRT) files.
 - Shift all timestamps by a specific time value.
 - Renumber frame sequence with specified start index.
+- Reorder frames based on their sequence number.
 - Linear correction by mapping two existing time stamps to new values.
 - Translate subtitles to different languages.
 - Only subtitles in selection are affected. If there is no selection, all subtitles are affected.
@@ -20,6 +21,8 @@ With **Subtitles: Renumber**, you can renumber the frames using the sequence wit
 The command **Subtitles: Linear Correction** prompts you for two timestamp mappings. The input is in form "original timestamp -> new timestamp". Pick one point from the beginning of the movie and second one from the end of the movie to get the best approximation.
 
 Use command **Subtitles: Translate** to translate subtitles to another language using Google translation service.
+
+With **Subtitles: Reorder**, you can reorder the frames based on their sequence number. This can be useful if you want to work with translated and original subtitles at the same time. You can first translate the subtitles (which will replace the original ones) and append the original subtitles at the end. Then, you can reorder them so you will have translated and original frames near each other.
 
 ## For Developers
 
