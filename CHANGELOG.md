@@ -24,3 +24,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Updated dependencies.
 - Added option to reorder the frames based on their sequence number.
+
+## [1.0.4] - 2019-05-10
+
+- Updated dependencies.
+- Removed unnecessary files from the packaged extension.

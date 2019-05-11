@@ -2,7 +2,7 @@
     "name": "subtitles-editor",
     "displayName": "Subtitles Editor",
     "description": "Edit SRT subtitles in Visual Studio Code.",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "publisher": "pepri",
     "repository": "https://github.com/pepri/subtitles-editor.git",
     "engines": {
@@ -76,6 +76,6 @@
         "cpx": "^1.5.0",
         "tslint": "^5.16.0",
         "typescript": "^3.4.5",
-        "vscode": "^1.1.33"
+        "vscode": "^1.1.34"
     }
 }
