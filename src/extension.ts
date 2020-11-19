@@ -371,11 +371,11 @@ async function httpGet(url: string): Promise<string> {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-	context.subscriptions.push(vscode.commands.registerCommand('extension.shift', shift));
-	context.subscriptions.push(vscode.commands.registerCommand('extension.renumber', renumber));
-	context.subscriptions.push(vscode.commands.registerCommand('extension.reorder', reorder));
-	context.subscriptions.push(vscode.commands.registerCommand('extension.linearCorrection', linearCorrection));
-	context.subscriptions.push(vscode.commands.registerCommand('extension.translate', translate));
+	context.subscriptions.push(vscode.commands.registerCommand('subtitles.shift', shift));
+	context.subscriptions.push(vscode.commands.registerCommand('subtitles.renumber', renumber));
+	context.subscriptions.push(vscode.commands.registerCommand('subtitles.reorder', reorder));
+	context.subscriptions.push(vscode.commands.registerCommand('subtitles.linearCorrection', linearCorrection));
+	context.subscriptions.push(vscode.commands.registerCommand('subtitles.translate', translate));
 }
 
 export function deactivate() {

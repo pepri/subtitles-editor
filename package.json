@@ -12,11 +12,11 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.shift",
-        "onCommand:extension.renumber",
-        "onCommand:extension.reorder",
-        "onCommand:extension.linearCorrection",
-        "onCommand:extension.translate"
+        "onCommand:subtitles.shift",
+        "onCommand:subtitles.renumber",
+        "onCommand:subtitles.reorder",
+        "onCommand:subtitles.linearCorrection",
+        "onCommand:subtitles.translate"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -42,23 +42,23 @@
         ],
         "commands": [
             {
-                "command": "extension.shift",
+                "command": "subtitles.shift",
                 "title": "Subtitles: Shift"
             },
             {
-                "command": "extension.renumber",
+                "command": "subtitles.renumber",
                 "title": "Subtitles: Renumber"
             },
             {
-                "command": "extension.reorder",
+                "command": "subtitles.reorder",
                 "title": "Subtitles: Reorder"
             },
             {
-                "command": "extension.linearCorrection",
+                "command": "subtitles.linearCorrection",
                 "title": "Subtitles: Linear Correction"
             },
             {
-                "command": "extension.translate",
+                "command": "subtitles.translate",
                 "title": "Subtitles: Translate"
             }
         ]
