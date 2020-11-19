@@ -3,6 +3,7 @@
 !.gitattributes
 !.vscode/
 !.vscodeignore
+!.eslintrc.js
 out
 node_modules
 *.vsix
