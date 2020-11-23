@@ -4,50 +4,13 @@ import * as vscode from 'vscode';
 import * as https from 'https';
 import * as languages from './languages.json';
 import { URL } from 'url';
+import { Frame } from './model/Frame';
+import { TimeLine } from './model/TimeLine';
+import { Time, TIME_REGEX, TIME_TAG_REGEX } from './model/Time';
 
-const timeRegex = /^([+\-]?)(\d{2}):(\d{2}):(\d{2})[,.](\d{3})$/;
-const sequenceRegex = /^([+\-]?)(\d+)$/;
+const sequenceRegex = /^([+\-]?)(\d+)(?=\s|$)/;
 const timeMappingRegex = /^\d{2}:\d{2}:\d{2}[,.]\d{3} -> \d{2}:\d{2}:\d{2}[,.]\d{3}$/;
-const timelineRegex = /^\d{2}:\d{2}:\d{2}[,.]\d{3} --> \d{2}:\d{2}:\d{2}[,.]\d{3}$/;
 const doNotTranslateRegex = /^(?:\s*|(\d+)|\d{2}:\d{2}:\d{2}[,.]\d{3} --> \d{2}:\d{2}:\d{2}[,.]\d{3})$/;
-const emptyRegex = /^\s*$/;
-
-function parseTime(value: string): number {
-	if (!value) {
-		return 0;
-	}
-	const match = value.match(timeRegex);
-	if (!match) {
-		return 0;
-	}
-
-	return (match[1] === '-' ? -1 : 1) * (Number(match[2]) * 60 * 60 + Number(match[3]) * 60 + Number(match[4]) + Number(match[5]) / 1000);
-}
-
-function pad2(value: number): string {
-	return value < 10 ? '0' + String(value) : String(value);
-}
-
-function pad3(value: number): string {
-	if (value < 10) {
-		return '00' + String(value);
-	} else if (value < 100) {
-		return '0' + String(value);
-	} else {
-		return String(value);
-	}
-}
-
-function formatTime(value: number): string {
-	const hours = Math.floor(value / (60 * 60));
-	value -= hours * 60 * 60;
-	const minutes = Math.floor(value / 60);
-	value -= minutes * 60;
-	const seconds = Math.floor(value);
-	value -= seconds;
-	const milliseconds = Math.round(value * 1000);
-	return (value < 0 ? '-' : '') + pad2(hours) + ':' + pad2(minutes) + ':' + pad2(seconds) + ',' + pad3(milliseconds);
-}
 
 async function shift() {
 	const textEditor = vscode.window.activeTextEditor;
@@ -61,7 +24,7 @@ async function shift() {
 		prompt: 'Enter the desired time shift. Use negative value if subtitles are late.',
 		value: '00:00:00,000',
 		valueSelection: [6, 8] as [number, number],
-		validateInput: async (value: string) => timeRegex.test(value) ? null : 'Time has to be in format ±00:00:00,000.'
+		validateInput: async (value: string) => TIME_REGEX.test(value) ? null : 'Time has to be in format ±00:00:00,000.'
 	};
 
 	const value = await vscode.window.showInputBox(inputBox);
@@ -70,7 +33,7 @@ async function shift() {
 		return false;
 	}
 
-	const offset = parseTime(value);
+	const offset = Time.parse(value).value;
 	const workspaceEdit = new vscode.WorkspaceEdit();
 	const documentUri = textEditor.document.uri;
 	const selections = !textEditor.selection.isEmpty
@@ -80,10 +43,19 @@ async function shift() {
 	for (const selection of selections) {
 		for (let lineIndex = selection.start.line; lineIndex <= selection.end.line; ++lineIndex) {
 			const line = textEditor.document.lineAt(lineIndex);
-			if (timelineRegex.test(line.text)) {
-				const timeline = line.text.split(' --> ')
-					.map(x => formatTime(parseTime(x) + offset));
-				workspaceEdit.replace(documentUri, line.range, timeline.join(' --> '));
+			if (!line.isEmptyOrWhitespace) {
+				const timeLine = TimeLine.parse(line.text);
+				if (timeLine) {
+					timeLine.shift(offset);
+					workspaceEdit.replace(documentUri, line.range, timeLine.format());
+				} else if (TIME_TAG_REGEX.test(line.text)) {
+					workspaceEdit.replace(documentUri, line.range,
+						line.text.replace(TIME_TAG_REGEX, (_match, text) => {
+							const time = Time.parse(text);
+							time.shift(offset);
+							return `<${time.format()}>`;
+						}));
+				}
 			}
 		}
 	}
@@ -124,10 +96,15 @@ async function renumber() {
 	for (const selection of selections) {
 		for (let lineIndex = selection.start.line; lineIndex <= selection.end.line; ++lineIndex) {
 			const line = textEditor.document.lineAt(lineIndex);
-			const previousLineText = lineIndex > 0 ? textEditor.document.lineAt(lineIndex - 1).text : '';
-			if (sequenceRegex.test(line.text) && emptyRegex.test(previousLineText)) {
-				workspaceEdit.replace(documentUri, line.range, String(offset));
-				++offset;
+			if (!line.isEmptyOrWhitespace) {
+				const previousLineIsEmpty = lineIndex === 0 || textEditor.document.lineAt(lineIndex - 1).isEmptyOrWhitespace;
+				if (previousLineIsEmpty) {
+					const match = line.text.match(sequenceRegex);
+					if (match) {
+						workspaceEdit.replace(documentUri, line.range, String(offset) + line.text.replace(sequenceRegex, ''));
+						++offset;
+					}
+				}
 			}
 		}
 	}
@@ -135,12 +112,6 @@ async function renumber() {
 	await vscode.workspace.applyEdit(workspaceEdit);
 
 	return true;
-}
-
-interface Frame {
-	lineIndex: number;
-	sequence: number;
-	lines: vscode.TextLine[];
 }
 
 async function reorder() {
@@ -161,11 +132,11 @@ async function reorder() {
 		let frame: Frame | null = null;
 		for (let lineIndex = selection.start.line; lineIndex <= selection.end.line; ++lineIndex) {
 			const line = textEditor.document.lineAt(lineIndex);
-			const previousLineText = lineIndex > 0 ? textEditor.document.lineAt(lineIndex - 1).text : '';
-			if (sequenceRegex.test(line.text) && emptyRegex.test(previousLineText)) {
+			const previousLineIsEmpty = lineIndex === 0 || textEditor.document.lineAt(lineIndex - 1).isEmptyOrWhitespace;
+			if (previousLineIsEmpty && sequenceRegex.test(line.text)) {
 				frame = {
 					lineIndex,
-					sequence: Number(line.text),
+					sequence: Number.parseInt(line.text, 10),
 					lines: [line]
 				};
 				frames.push(frame);
@@ -183,7 +154,7 @@ async function reorder() {
 		}
 		frames.sort((a, b) => a.sequence !== b.sequence ? a.sequence - b.sequence : a.lineIndex - b.lineIndex);
 		const lines = frames.reduce((acc, frame) => { acc.push(...frame.lines.map(line => line.text + '\n')); return acc; }, [] as string[]);
-		workspaceEdit.replace(documentUri, selection, lines.join(''));
+		workspaceEdit.replace(documentUri, selection, lines.join('').replace(/\n$/, ''));
 	}
 
 	await vscode.workspace.applyEdit(workspaceEdit);
@@ -191,15 +162,16 @@ async function reorder() {
 	return true;
 }
 
-function findFirstTime(textDocument: vscode.TextDocument, lineNumbers: number[]) {
+function findFirstTime(textDocument: vscode.TextDocument, lineNumbers: number[]): Time {
 	for (const lineNumber of lineNumbers) {
 		const line = textDocument.lineAt(lineNumber);
-		if (timelineRegex.test(line.text)) {
-			const timeline = line.text.split(' --> ');
-			return timeline[0];
+		const timeLine = TimeLine.parse(line.text);
+		if (timeLine) {
+			timeLine.startTime.normalize();
+			return timeLine.startTime;
 		}
 	}
-	return null;
+	return Time.parse('');
 }
 
 async function linearCorrection() {
@@ -210,8 +182,8 @@ async function linearCorrection() {
 	}
 
 	const keys = Array.from(Array(textEditor.document.lineCount).keys());
-	const firstTime = findFirstTime(textEditor.document, keys) || '00:00:00,000';
-	const secondTime = findFirstTime(textEditor.document, keys.reverse()) || '00:00:00,000';
+	const firstTime = findFirstTime(textEditor.document, keys).format();
+	const secondTime = findFirstTime(textEditor.document, keys.reverse()).format();
 
 	const firstInputBox = {
 		placeHolder: 'Time #1',
@@ -238,22 +210,31 @@ async function linearCorrection() {
 		return false;
 	}
 
-	const firstMapping = firstValue.split(' -> ').map(parseTime);
-	const secondMapping = secondValue.split(' -> ').map(parseTime);
+	const firstMapping = firstValue.split(' -> ').map(Time.parse);
+	const secondMapping = secondValue.split(' -> ').map(Time.parse);
+	const originalTimeLine = new TimeLine(firstMapping[0], secondMapping[0]);
+	const updatedTimeLine = new TimeLine(firstMapping[1], secondMapping[1]);
 
 	const workspaceEdit = new vscode.WorkspaceEdit();
 	const documentUri = textEditor.document.uri;
 	const selections = !textEditor.selection.isEmpty
 		? textEditor.selections
 		: [new vscode.Selection(textEditor.document.positionAt(0), textEditor.document.lineAt(textEditor.document.lineCount - 1).range.end)];
-	const factor = (secondMapping[1] - firstMapping[1]) / (secondMapping[0] - firstMapping[0]);
 
 	for (const selection of selections) {
 		for (let lineIndex = selection.start.line; lineIndex <= selection.end.line; ++lineIndex) {
 			const line = textEditor.document.lineAt(lineIndex);
-			if (timelineRegex.test(line.text)) {
-				const timeline = line.text.split(' --> ').map(x => formatTime((parseTime(x) - firstMapping[0]) * factor + firstMapping[1]));
-				workspaceEdit.replace(documentUri, line.range, timeline.join(' --> '));
+			const timeLine = TimeLine.parse(line.text);
+			if (timeLine) {
+				timeLine.applyLinearCorrection(originalTimeLine, updatedTimeLine);
+				workspaceEdit.replace(documentUri, line.range, timeLine.format());
+			} else if (TIME_TAG_REGEX.test(line.text)) {
+				workspaceEdit.replace(documentUri, line.range,
+					line.text.replace(TIME_TAG_REGEX, (_match, text) => {
+						const time = Time.parse(text);
+						time.applyLinearCorrection(originalTimeLine, updatedTimeLine);
+						return `<${time.format()}>`;
+					}));
 			}
 		}
 	}

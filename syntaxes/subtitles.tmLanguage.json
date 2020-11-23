@@ -1,0 +1,64 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Subtitles",
+	"patterns": [
+		{ "include": "#number" },
+		{ "include": "#timeline" },
+		{ "include": "#html" },
+		{ "include": "#bb" }
+	],
+	"repository": {
+		"number": {
+			"patterns": [{
+				"name": "constant.numeric",
+				"match": "^([+\\-]?\\d+)(?=\\s|$)"
+			}]
+		},
+		"keyword": {
+			"patterns": [{
+				"name": "constant.numeric",
+				"match": "^\\s*(WEBVTT|NOTE|STYLE)(?=\\s|$)"
+			}]
+		},
+		"timeline": {
+			"patterns": [{
+				"match": "^\\s*([+\\-]?(?:\\d+:)?\\d+:\\d{2}(?:[,.]\\d+)?)\\s*(-->|,)\\s*([+\\-]?(?:\\d+:)?\\d+:\\d{2}(?:[,.]\\d+)?)\\s*(.*?)\\s*$",
+				"captures": {
+					"1": { "name": "variable.parameter" },
+					"2": { "name": "keyword.control" },
+					"3": { "name": "variable.parameter" },
+					"4": { "name": "constant.numeric" }
+				}
+			}]
+		},
+		"html": {
+			"patterns": [{
+				"begin": "(</?)(.*?)( .*?)?(?=\\>)",
+				"beginCaptures": {
+					"1": { "name": "punctuation.definition.tag.begin.html" },
+					"2": { "name": "entity.name.tag.inline.any.html" },
+					"3": { "name": "entity.other.attribute-name.html" }
+				},
+				"end": "(/?>)",
+				"endCaptures": {
+					"1": { "name": "punctuation.definition.tag.end.html" }
+				}
+			}]
+		},
+		"bb": {
+			"patterns": [{
+				"begin": "(\\[(?:END\\s)?)(.*?)(?=\\])",
+				"beginCaptures": {
+					"1": { "name": "punctuation.definition.tag.begin.html" },
+					"2": { "name": "entity.name.tag.inline.any.html" },
+					"3": { "name": "entity.other.attribute-name.html" }
+				},
+				"end": "(\\])",
+				"endCaptures": {
+					"1": { "name": "punctuation.definition.tag.end.html" }
+				}
+			}]
+		}
+	},
+	"scopeName": "source.subtitles"
+}

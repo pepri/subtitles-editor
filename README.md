@@ -1,10 +1,16 @@
 # Subtitles Editor
 
-This editor allows you to make edits to SubRip Text (SRT) files with subtitles - shift the timestamps, do a linear correction, or translate them to another language.
+This editor allows you to make edits to files with subtitles - shift the timestamps, do a linear correction, or translate them to another language.
+
+## Supported File Formats
+
+- SubRip Text (`.srt`)
+- WebVTT (`.vtt`)
+- SubViewer (`.sbv`, `.sub`)
 
 ## Features
 
-- Colorizer for SubRip Text (SRT) files.
+- Colorizer for subtitle files.
 - Shift all timestamps by a specific time value.
 - Renumber frame sequence with specified start index.
 - Reorder frames based on their sequence number.
@@ -80,3 +86,11 @@ To convert the published table to JSON:
 - remove the last comma
 - wrap the result in curly braces
 - save it as `src/languages.json`
+
+### Packaging
+
+~~~
+npm run package
+# verify that packaged .vsix file contains the required files only
+npm run publish
+~~~

@@ -4,28 +4,31 @@ All notable changes to the "subtitles-editor" extension are documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [0.0.1] - 2018-07-08
+## [1.1.0] - 2020-11-23
 
-- Initial release
+- Added support for WebVTT and SubViewer formats.
+- Use better namespace for commands.
 
-## [1.0.0] - 2018-08-18
+## [1.0.4] - 2019-05-10
 
-- Added option to translate subtitles.
+- Removed unnecessary files from the packaged extension.
 
-## [1.0.1] - 2018-09-06
+## [1.0.3] - 2019-05-05
 
-- Added option to renumber the sequence of the frames.
+- Added option to reorder the frames based on their sequence number.
 
 ## [1.0.2] - 2019-02-08
 
 - Updated dependencies.
 
-## [1.0.3] - 2019-05-05
+## [1.0.1] - 2018-09-06
 
-- Updated dependencies.
-- Added option to reorder the frames based on their sequence number.
+- Added option to renumber the sequence of the frames.
 
-## [1.0.4] - 2019-05-10
+## [1.0.0] - 2018-08-18
 
-- Updated dependencies.
-- Removed unnecessary files from the packaged extension.
+- Added option to translate subtitles.
+
+## [0.0.1] - 2018-07-08
+
+- Initial release
