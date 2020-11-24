@@ -1,9 +1,11 @@
 {
     "name": "subtitles-editor",
+    "icon": "res/icon.png",
     "displayName": "Subtitles Editor",
     "description": "Edit SRT subtitles in Visual Studio Code.",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "publisher": "pepri",
+    "license": "MIT",
     "repository": "https://github.com/pepri/subtitles-editor.git",
     "engines": {
         "vscode": "^1.25.0"
@@ -27,6 +29,7 @@
                     "Subtitles",
                     "SubRip Text",
                     "subrip",
+                    "Web Video Text Tracks",
                     "WebVTT",
                     "vtt",
                     "SubViewer",

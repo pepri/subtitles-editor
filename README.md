@@ -22,7 +22,7 @@ This editor allows you to make edits to files with subtitles - shift the timesta
 
 Use command **Subtitles: Shift** and enter offset time to shift subtitles. The format is "HH:mm:ss,zzz". You can use negative time if subtitles are too late.
 
-With **Subtitles: Renumber**, you can renumber the frames using the sequence with specified start index. After selecting this options, enter the start of the sequence (usually `1`) and it will be renumbered accordingly.
+With **Subtitles: Renumber**, you can renumber the frames using the sequence with specified start index. After selecting this option, enter the start of the sequence (usually `1`) and it will be renumbered accordingly.
 
 The command **Subtitles: Linear Correction** prompts you for two timestamp mappings. The input is in form "original timestamp -> new timestamp". Pick one point from the beginning of the movie and second one from the end of the movie to get the best approximation.
 
@@ -36,11 +36,11 @@ The goal of this extension is to allow easily modify subtitles files.
 
 Tenet of this software is to do minimal modifications to the file when fulfilling any command, ignoring any errors that might be in the subtitles file. For instance, when asked to renumber frames, it should not modify the time format even if it is invalid. When altering timestamps, keep the time formatting.
 
-All commands are to be applied to selection only. If no selection exists, the whole they should be applied to whole file.
+All commands are to be applied to selection only. If no selection exists, they should be applied to whole file.
 
 ### Existing Subtitle Formats
 
-There is bunch of [existing file formats](https://en.wikipedia.org/wiki/Category:Subtitle_file_formats). This extension currently supports SRT files, but support should be extended to VTT and SVB files.
+There is bunch of [existing file formats](https://en.wikipedia.org/wiki/Category:Subtitle_file_formats). This extension currently supports SRT, VTT, and SBV files.
 
 #### SubRip Text (SRT)
 
@@ -94,3 +94,10 @@ npm run package
 # verify that packaged .vsix file contains the required files only
 npm run publish
 ~~~
+
+### Attributions
+
+- [SubRip Text](https://en.wikipedia.org/wiki/SubRip) information by [Wikipedia Contributors](https://en.wikipedia.org/w/index.php?title=SubRip&action=history) is licensed under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+- [Web Video Text Tracks Format](https://developer.mozilla.org/en-US/docs/Web/API/WebVTT_API) information by [Mozilla Contributors](https://wiki.developer.mozilla.org/en-US/docs/Web/API/WebVTT_API$history) is licensed under [CC BY-SA 2.5](https://creativecommons.org/licenses/by-sa/2.5/).
+- [SubViewer](https://wiki.videolan.org/SubViewer/) information by [VideoLAN Wiki Contributors](https://wiki.videolan.org/index.php?title=SubViewer&action=history) is licensed under [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html).
+- [Icon](https://commons.wikimedia.org/wiki/File:Font_Awesome_5_solid_closed-captioning.svg) from Font Awesome Free 5.2.0 by [@fontawesome](https://fontawesome.com) is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en) and was modified to add white background.
