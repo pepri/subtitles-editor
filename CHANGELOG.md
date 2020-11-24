@@ -4,6 +4,10 @@ All notable changes to the "subtitles-editor" extension are documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.1.2] - 2020-11-23
+
+- Updated description.
+
 ## [1.1.1] - 2020-11-23
 
 - Added icon and fixed README.

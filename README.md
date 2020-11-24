@@ -5,7 +5,7 @@ This editor allows you to make edits to files with subtitles - shift the timesta
 ## Supported File Formats
 
 - SubRip Text (`.srt`)
-- WebVTT (`.vtt`)
+- Web Video Text Tracks (`.vtt`)
 - SubViewer (`.sbv`, `.sub`)
 
 ## Features
