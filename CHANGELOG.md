@@ -4,6 +4,10 @@ All notable changes to the "subtitles-editor" extension are documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.1.3] - 2020-12-16
+
+- Take URI-encoding into calculation of text length that is sent to translation service.
+
 ## [1.1.2] - 2020-11-23
 
 - Updated description.
