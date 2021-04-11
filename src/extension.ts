@@ -315,7 +315,7 @@ async function translateLines(language: string, originalLines: string[]): Promis
 	const lines: string[] = [];
 	let length = 0;
 	for (const originalLine of originalLines) {
-		const originalLineLength = encodeURIComponent(originalLine).length
+		const originalLineLength = encodeURIComponent(originalLine).length;
 		if (length + originalLineLength + 1 > 8000) {
 			const translatedText = await translateText(language, lines.join('\n'));
 			Array.prototype.push.apply(result, translatedText.split('\n'));
@@ -347,6 +347,7 @@ async function httpGet(url: string): Promise<string> {
 				reject(new Error(``));
 			}
 			let body = '';
+			res.setEncoding('utf8');
 			res.on('data', d => body += d);
 			res.on('end', () => resolve(body));
 		});
