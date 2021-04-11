@@ -4,6 +4,11 @@ All notable changes to the "subtitles-editor" extension are documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.1.4] - 2021-04-10
+
+- Fix translation response decoding.
+- Fix detection of lines to not translate.
+
 ## [1.1.3] - 2020-12-16
 
 - Take URI-encoding into calculation of text length that is sent to translation service.
