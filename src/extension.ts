@@ -10,7 +10,6 @@ import { Time, TIME_REGEX, TIME_TAG_REGEX } from './model/Time';
 
 const sequenceRegex = /^([+\-]?)(\d+)(?=\s|$)/;
 const timeMappingRegex = /^\d{2}:\d{2}:\d{2}[,.]\d{3} -> \d{2}:\d{2}:\d{2}[,.]\d{3}$/;
-const doNotTranslateRegex = /^(?:\s*|(\d+)|\d{2}:\d{2}:\d{2}[,.]\d{3} --> \d{2}:\d{2}:\d{2}[,.]\d{3})$/;
 
 async function shift() {
 	const textEditor = vscode.window.activeTextEditor;
@@ -281,7 +280,7 @@ async function translate() {
 	for (const selection of selections) {
 		for (let lineIndex = selection.start.line; lineIndex <= selection.end.line; ++lineIndex) {
 			const line = textEditor.document.lineAt(lineIndex);
-			if (!doNotTranslateRegex.test(line.text)) {
+			if (!TimeLine.parse(line.text)) {
 				originalLines.push(line.text);
 				lineIndexes.push(lineIndex);
 			}
