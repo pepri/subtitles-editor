@@ -82,7 +82,7 @@ The languages that can be used for translation are published by Google in Google
 To convert the published table to JSON:
 
 - copy the table from Google documentation (https://cloud.google.com/translate/docs/languages)
-- replace `^(.*?)\t(.*?)(?: \(.+\))?$` with `\t"$2": "$1",`
+- replace `^(.*?)\t(.*?)(?: or .*?)?(?: \(.+\))?$` with `\t"$2": "$1",`
 - remove the last comma
 - wrap the result in curly braces
 - save it as `src/languages.json`
@@ -95,7 +95,7 @@ npm run package
 npm run publish
 ~~~
 
-### Attributions
+## Attributions
 
 - [SubRip Text](https://en.wikipedia.org/wiki/SubRip) information by [Wikipedia Contributors](https://en.wikipedia.org/w/index.php?title=SubRip&action=history) is licensed under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 - [Web Video Text Tracks Format](https://developer.mozilla.org/en-US/docs/Web/API/WebVTT_API) information by [Mozilla Contributors](https://wiki.developer.mozilla.org/en-US/docs/Web/API/WebVTT_API$history) is licensed under [CC BY-SA 2.5](https://creativecommons.org/licenses/by-sa/2.5/).
