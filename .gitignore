@@ -4,6 +4,7 @@
 !.vscode/
 !.vscodeignore
 !.eslintrc.js
+!.editorconfig
 out
 node_modules
 *.vsix
