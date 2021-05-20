@@ -94,16 +94,10 @@ async function renumber() {
 
 	for (const selection of selections) {
 		for (let lineIndex = selection.start.line; lineIndex <= selection.end.line; ++lineIndex) {
-			const line = textEditor.document.lineAt(lineIndex);
-			if (!line.isEmptyOrWhitespace) {
-				const previousLineIsEmpty = lineIndex === 0 || textEditor.document.lineAt(lineIndex - 1).isEmptyOrWhitespace;
-				if (previousLineIsEmpty) {
-					const match = line.text.match(sequenceRegex);
-					if (match) {
-						workspaceEdit.replace(documentUri, line.range, String(offset) + line.text.replace(sequenceRegex, ''));
-						++offset;
-					}
-				}
+			if (isSequenceLine(textEditor.document, lineIndex)) {
+				const line = textEditor.document.lineAt(lineIndex);
+				workspaceEdit.replace(documentUri, line.range, String(offset) + line.text.replace(sequenceRegex, ''));
+				++offset;
 			}
 		}
 	}
@@ -131,8 +125,7 @@ async function reorder() {
 		let frame: Frame | null = null;
 		for (let lineIndex = selection.start.line; lineIndex <= selection.end.line; ++lineIndex) {
 			const line = textEditor.document.lineAt(lineIndex);
-			const previousLineIsEmpty = lineIndex === 0 || textEditor.document.lineAt(lineIndex - 1).isEmptyOrWhitespace;
-			if (previousLineIsEmpty && sequenceRegex.test(line.text)) {
+			if (isSequenceLine(textEditor.document, lineIndex)) {
 				frame = {
 					lineIndex,
 					sequence: Number.parseInt(line.text, 10),
@@ -159,6 +152,14 @@ async function reorder() {
 	await vscode.workspace.applyEdit(workspaceEdit);
 
 	return true;
+}
+
+function isEmptyLine(textDocument: vscode.TextDocument, lineIndex: number): boolean {
+	return lineIndex < 0 || textDocument.lineAt(lineIndex).isEmptyOrWhitespace;
+}
+
+function isSequenceLine(textDocument: vscode.TextDocument, lineIndex: number): boolean {
+	return isEmptyLine(textDocument, lineIndex - 1) && sequenceRegex.test(textDocument.lineAt(lineIndex).text);
 }
 
 function findFirstTime(textDocument: vscode.TextDocument, lineNumbers: number[]): Time {
@@ -280,7 +281,7 @@ async function translate() {
 	for (const selection of selections) {
 		for (let lineIndex = selection.start.line; lineIndex <= selection.end.line; ++lineIndex) {
 			const line = textEditor.document.lineAt(lineIndex);
-			if (!TimeLine.parse(line.text)) {
+			if (!line.isEmptyOrWhitespace && !TimeLine.parse(line.text) && !isSequenceLine(textEditor.document, lineIndex)) {
 				originalLines.push(line.text);
 				lineIndexes.push(lineIndex);
 			}

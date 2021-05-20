@@ -4,6 +4,12 @@ All notable changes to the "subtitles-editor" extension are documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.1.5] - 2021-05-19
+
+- Fix translation: Skip sequence and empty lines when translating.
+- Update supported languages.
+- Update dependencies and migrate from superseded module for running tests.
+
 ## [1.1.4] - 2021-04-10
 
 - Fix translation response decoding.
