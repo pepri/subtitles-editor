@@ -22,6 +22,15 @@ function applyLinearCorrection(time: string, originalTimeLine: string, updatedTi
 	return value.format();
 }
 
+function convert(timeLine: string, timeSeparator: string, millisSeparator: string, shortMillis: boolean): string {
+	const value = TimeLine.parse(timeLine);
+	if (!value) {
+		return timeLine;
+	}
+	value.convert(timeSeparator, millisSeparator, shortMillis);
+	return value.format();
+}
+
 suite('Time Tests', function() {
 	test('format', function() {
 		assert.strictEqual(format('12:34:56,7891'), '12:34:56,789');
@@ -69,5 +78,16 @@ suite('Time Tests', function() {
 
 	test('linear correction', function() {
 		assert.strictEqual(applyLinearCorrection('01:00:00,000', '00:00:00,000-->02:00:00,000', '01:00:00,000-->05:00:00,000'), '03:00:00,000');
+	});
+
+	test('convert', function() {
+		assert.strictEqual(convert('01:23:45,678-->23:45:12,345', ' --> ', '.', false), '01:23:45.678 --> 23:45:12.345');
+		assert.strictEqual(convert('01:23:45,678-->23:45:12,345', ',', '.', true), '01:23:45.68,23:45:12.35');
+
+		assert.strictEqual(convert('11:23:45.678-->23:45:12.345', ' --> ', ',', false), '11:23:45,678 --> 23:45:12,345');
+		assert.strictEqual(convert('11:23:45.678-->23:45:12.345', ',', '.', true), '11:23:45.68,23:45:12.35');
+
+		assert.strictEqual(convert('21:23:45.68,23:45:12.35', ' --> ', ',', false), '21:23:45,680 --> 23:45:12,350');
+		assert.strictEqual(convert('21:23:45.68,23:45:12.35', ' --> ', '.', false), '21:23:45.680 --> 23:45:12.350');
 	});
 });

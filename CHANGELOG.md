@@ -4,6 +4,10 @@ All notable changes to the "subtitles-editor" extension are documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.1.6] - 2021-07-13
+
+- Added option to format timestamp format.
+
 ## [1.1.5] - 2021-05-19
 
 - Fix translation: Skip sequence and empty lines when translating.

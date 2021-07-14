@@ -35,6 +35,12 @@ export class TimeLine {
 		this.endTime.applyLinearCorrection(original, updated);
 	}
 
+	convert(timeSeparator: string, millisSeparator: string, shortMillis: boolean) {
+		this.startTime.convert(millisSeparator, shortMillis);
+		this.endTime.convert(millisSeparator, shortMillis);
+		this.separator = timeSeparator;
+	}
+
 	format() {
 		return `${this.startTime.format()}${this.separator}${this.endTime.format()}${this.extraData}`;
 	}

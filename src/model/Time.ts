@@ -21,6 +21,11 @@ export class Time {
 		this.value = (this.value - original.startTime.value) * factor + updated.startTime.value;
 	}
 
+	convert(separator: string, shortMillis: boolean) {
+		this.separator = separator;
+		this.shortMillis = shortMillis;
+	}
+
 	normalize(): void {
 		this.separator = ',';
 		this.shortMillis = false;

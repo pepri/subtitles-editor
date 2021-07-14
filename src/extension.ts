@@ -244,6 +244,83 @@ async function linearCorrection() {
 	return true;
 }
 
+interface SubtitleType {
+	name: string;
+	extensions: string[];
+	timeSeparator: string;
+	millisSeparator: string;
+	shortMillis: boolean;
+}
+
+async function convertTimeFormat() {
+	const textEditor = vscode.window.activeTextEditor;
+
+	if (typeof textEditor === 'undefined') {
+		return false;
+	}
+
+	const subtitleTypes: { [name: string]: SubtitleType } = {
+		['SubRip Text']: {
+			name: 'SubRip Text',
+			extensions: ['srt'],
+			timeSeparator: ' --> ',
+			millisSeparator: ',',
+			shortMillis: false,
+		},
+		['Web Video Text Tracks']: {
+			name: 'Web Video Text Tracks',
+			extensions: ['vtt'],
+			timeSeparator: ' --> ',
+			millisSeparator: '.',
+			shortMillis: false,
+		},
+		['SubViewer']: {
+			name: 'SubViewer',
+			extensions: ['sbv', 'sub'],
+			timeSeparator: ',',
+			millisSeparator: '.',
+			shortMillis: true,
+		},
+	};
+	const items = Object.values(subtitleTypes)
+		.map(({ name, extensions }) => ({ label: name, detail: extensions.join(', ') }));
+
+	const quickPickOpts: vscode.QuickPickOptions = {
+		placeHolder: 'Type',
+		matchOnDetail: true
+	};
+
+	const value = await vscode.window.showQuickPick(items, quickPickOpts);
+
+	if (typeof value === 'undefined') {
+		return false;
+	}
+
+	const subtitleType = subtitleTypes[value.label];
+	const workspaceEdit = new vscode.WorkspaceEdit();
+	const documentUri = textEditor.document.uri;
+	const selections = !textEditor.selection.isEmpty
+		? textEditor.selections
+		: [new vscode.Selection(textEditor.document.positionAt(0), textEditor.document.lineAt(textEditor.document.lineCount - 1).range.end)];
+
+	for (const selection of selections) {
+		for (let lineIndex = selection.start.line; lineIndex <= selection.end.line; ++lineIndex) {
+			const line = textEditor.document.lineAt(lineIndex);
+			if (!line.isEmptyOrWhitespace) {
+				const timeLine = TimeLine.parse(line.text);
+				if (timeLine) {
+					timeLine.convert(subtitleType.timeSeparator, subtitleType.millisSeparator, subtitleType.shortMillis);
+					workspaceEdit.replace(documentUri, line.range, timeLine.format());
+				}
+			}
+		}
+	}
+
+	await vscode.workspace.applyEdit(workspaceEdit);
+
+	return true;
+}
+
 async function translate() {
 	const textEditor = vscode.window.activeTextEditor;
 
@@ -359,6 +436,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('subtitles.renumber', renumber));
 	context.subscriptions.push(vscode.commands.registerCommand('subtitles.reorder', reorder));
 	context.subscriptions.push(vscode.commands.registerCommand('subtitles.linearCorrection', linearCorrection));
+	context.subscriptions.push(vscode.commands.registerCommand('subtitles.convertTimeFormat', convertTimeFormat));
 	context.subscriptions.push(vscode.commands.registerCommand('subtitles.translate', translate));
 }
 
