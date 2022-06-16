@@ -108,7 +108,7 @@
 		"typescript": "^4.2.4",
 		"@types/vscode": "^1.25.0",
 		"vscode-test": "^1.5.2",
-		"vsce": "^1.95.1"
+		"vsce": "^2.9.1"
 	},
 	"__metadata": {
 		"id": "04738eb6-00d0-4791-a5ae-09d789fa2a62",
