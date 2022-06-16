@@ -13,7 +13,7 @@ This editor allows you to make edits to files with subtitles - shift the timesta
 - Colorizer for subtitle files.
 - Shift all timestamps by a specific time value.
 - Renumber frame sequence with specified start index.
-- Reorder frames based on their sequence number.
+- Reorder frames based on their sequence number or timestamp.
 - Linear correction by mapping two existing time stamps to new values.
 - Translate subtitles to different languages.
 - Only subtitles in selection are affected. If there is no selection, all subtitles are affected.
@@ -30,7 +30,9 @@ The command **Subtitles: Convert Time Format** converts timestamps in the file i
 
 Use command **Subtitles: Translate** to translate subtitles to another language using Google translation service.
 
-With **Subtitles: Reorder**, you can reorder the frames based on their sequence number. This can be useful if you want to work with translated and original subtitles at the same time. You can first translate the subtitles (which will replace the original ones) and append the original subtitles at the end. Then, you can reorder them so you will have translated and original frames near each other.
+With **Subtitles: Reorder by Sequence**, you can reorder the frames based on their sequence number. This can be useful if you want to work with translated and original subtitles at the same time. You can first translate the subtitles (which will replace the original ones) and append the original subtitles at the end. Then, you can reorder them so you will have translated and original frames near each other.
+
+The **Subtitles: Reorder by Timestamp** reorders the frames by the time offset.
 
 ## For Developers
 

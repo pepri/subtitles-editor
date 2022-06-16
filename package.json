@@ -3,7 +3,7 @@
 	"icon": "res/icon.png",
 	"displayName": "Subtitles Editor",
 	"description": "Edit subtitles in SRT, WebVTT, and SBV in VS Code.",
-	"version": "1.1.6",
+	"version": "1.1.7",
 	"publisher": "pepri",
 	"license": "MIT",
 	"repository": "https://github.com/pepri/subtitles-editor.git",
@@ -16,7 +16,8 @@
 	"activationEvents": [
 		"onCommand:subtitles.shift",
 		"onCommand:subtitles.renumber",
-		"onCommand:subtitles.reorder",
+		"onCommand:subtitles.reorderBySequence",
+		"onCommand:subtitles.reorderByTimestamp",
 		"onCommand:subtitles.linearCorrection",
 		"onCommand:subtitles.convertTimeFormat",
 		"onCommand:subtitles.translate"
@@ -62,8 +63,12 @@
 				"title": "Subtitles: Renumber"
 			},
 			{
-				"command": "subtitles.reorder",
-				"title": "Subtitles: Reorder"
+				"command": "subtitles.reorderBySequence",
+				"title": "Subtitles: Reorder by Sequence"
+			},
+			{
+				"command": "subtitles.reorderByTimestamp",
+				"title": "Subtitles: Reorder by Timestamp"
 			},
 			{
 				"command": "subtitles.linearCorrection",
@@ -104,5 +109,11 @@
 		"@types/vscode": "^1.25.0",
 		"vscode-test": "^1.5.2",
 		"vsce": "^1.95.1"
+	},
+	"__metadata": {
+		"id": "04738eb6-00d0-4791-a5ae-09d789fa2a62",
+		"publisherDisplayName": "Peter Prikryl",
+		"publisherId": "414f75b7-db6e-4ae1-aeb8-0f12cc3a101b",
+		"isPreReleaseVersion": false
 	}
 }

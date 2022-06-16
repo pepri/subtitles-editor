@@ -38,7 +38,6 @@ module.exports = {
 			"always"
 		],
 		"no-trailing-spaces": "error",
-		"no-redeclare": "warn",
 		"no-throw-literal": "warn"
 	}
 };

@@ -94,7 +94,7 @@ async function renumber() {
 
 	for (const selection of selections) {
 		for (let lineIndex = selection.start.line; lineIndex <= selection.end.line; ++lineIndex) {
-			if (isSequenceLine(textEditor.document, lineIndex)) {
+			if (isEmptyLine(textEditor.document, lineIndex - 1) && isSequenceLine(textEditor.document, lineIndex)) {
 				const line = textEditor.document.lineAt(lineIndex);
 				workspaceEdit.replace(documentUri, line.range, String(offset) + line.text.replace(sequenceRegex, ''));
 				++offset;
@@ -107,7 +107,15 @@ async function renumber() {
 	return true;
 }
 
-async function reorder() {
+async function reorderBySequence() {
+	return await reorder(Frame.compareSequence);
+}
+
+async function reorderByTimestamp() {
+	return await reorder(Frame.compareTimestamp);
+}
+
+async function reorder(comparer: (a: Frame, b: Frame) => number) {
 	const textEditor = vscode.window.activeTextEditor;
 
 	if (typeof textEditor === 'undefined') {
@@ -115,20 +123,32 @@ async function reorder() {
 	}
 
 	const workspaceEdit = new vscode.WorkspaceEdit();
-	const documentUri = textEditor.document.uri;
+	const textDocument = textEditor.document;
+	const documentUri = textDocument.uri;
 	const selections = !textEditor.selection.isEmpty
 		? textEditor.selections
-		: [new vscode.Selection(textEditor.document.positionAt(0), textEditor.document.lineAt(textEditor.document.lineCount - 1).range.end)];
+		: [new vscode.Selection(textDocument.positionAt(0), textDocument.lineAt(textDocument.lineCount - 1).range.end)];
 
 	for (const selection of selections) {
 		const frames: Frame[] = [];
 		let frame: Frame | null = null;
 		for (let lineIndex = selection.start.line; lineIndex <= selection.end.line; ++lineIndex) {
-			const line = textEditor.document.lineAt(lineIndex);
-			if (isSequenceLine(textEditor.document, lineIndex)) {
+			const line = textDocument.lineAt(lineIndex);
+			const previousLineIsEmpty = isEmptyLine(textDocument, lineIndex - 1);
+			let timeLine = null;
+			if (previousLineIsEmpty && isSequenceLine(textDocument, lineIndex)) {
 				frame = {
 					lineIndex,
 					sequence: Number.parseInt(line.text, 10),
+					timeLine,
+					lines: [line]
+				};
+				frames.push(frame);
+			} else if (previousLineIsEmpty && (timeLine = TimeLine.parse(line.text))) {
+				frame = {
+					lineIndex,
+					sequence: Number.NEGATIVE_INFINITY,
+					timeLine,
 					lines: [line]
 				};
 				frames.push(frame);
@@ -137,14 +157,18 @@ async function reorder() {
 					frame = {
 						lineIndex,
 						sequence: Number.NEGATIVE_INFINITY,
+						timeLine,
 						lines: []
 					};
 					frames.push(frame);
 				}
+				if (!frame.timeLine) {
+					frame.timeLine = TimeLine.parse(line.text);
+				}
 				frame.lines.push(line);
 			}
 		}
-		frames.sort((a, b) => a.sequence !== b.sequence ? a.sequence - b.sequence : a.lineIndex - b.lineIndex);
+		frames.sort(comparer);
 		const lines = frames.reduce((acc, frame) => { acc.push(...frame.lines.map(line => line.text + '\n')); return acc; }, [] as string[]);
 		workspaceEdit.replace(documentUri, selection, lines.join('').replace(/\n$/, ''));
 	}
@@ -159,7 +183,7 @@ function isEmptyLine(textDocument: vscode.TextDocument, lineIndex: number): bool
 }
 
 function isSequenceLine(textDocument: vscode.TextDocument, lineIndex: number): boolean {
-	return isEmptyLine(textDocument, lineIndex - 1) && sequenceRegex.test(textDocument.lineAt(lineIndex).text);
+	return sequenceRegex.test(textDocument.lineAt(lineIndex).text);
 }
 
 function findFirstTime(textDocument: vscode.TextDocument, lineNumbers: number[]): Time {
@@ -434,7 +458,8 @@ async function httpGet(url: string): Promise<string> {
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('subtitles.shift', shift));
 	context.subscriptions.push(vscode.commands.registerCommand('subtitles.renumber', renumber));
-	context.subscriptions.push(vscode.commands.registerCommand('subtitles.reorder', reorder));
+	context.subscriptions.push(vscode.commands.registerCommand('subtitles.reorderBySequence', reorderBySequence));
+	context.subscriptions.push(vscode.commands.registerCommand('subtitles.reorderByTimestamp', reorderByTimestamp));
 	context.subscriptions.push(vscode.commands.registerCommand('subtitles.linearCorrection', linearCorrection));
 	context.subscriptions.push(vscode.commands.registerCommand('subtitles.convertTimeFormat', convertTimeFormat));
 	context.subscriptions.push(vscode.commands.registerCommand('subtitles.translate', translate));

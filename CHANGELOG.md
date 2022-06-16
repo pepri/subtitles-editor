@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [1.1.6] - 2021-07-13
 
+- Added option to sort the frames by timestamp.
+
+## [1.1.6] - 2021-07-13
+
 - Added option to format timestamp format.
 
 ## [1.1.5] - 2021-05-19
