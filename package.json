@@ -1,119 +1,164 @@
 {
-	"name": "subtitles-editor",
-	"icon": "res/icon.png",
-	"displayName": "Subtitles Editor",
-	"description": "Edit subtitles in SRT, WebVTT, and SBV in VS Code.",
-	"version": "1.1.7",
-	"publisher": "pepri",
-	"license": "MIT",
-	"repository": "https://github.com/pepri/subtitles-editor.git",
-	"engines": {
-		"vscode": "^1.25.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"onCommand:subtitles.shift",
-		"onCommand:subtitles.renumber",
-		"onCommand:subtitles.reorderBySequence",
-		"onCommand:subtitles.reorderByTimestamp",
-		"onCommand:subtitles.linearCorrection",
-		"onCommand:subtitles.convertTimeFormat",
-		"onCommand:subtitles.translate"
-	],
-	"main": "./out/extension",
-	"contributes": {
-		"languages": [
-			{
-				"id": "subtitles",
-				"aliases": [
-					"Subtitles",
-					"SubRip Text",
-					"subrip",
-					"Web Video Text Tracks",
-					"WebVTT",
-					"vtt",
-					"SubViewer",
-					"sub"
-				],
-				"extensions": [
-					".srt",
-					".vtt",
-					".sbv",
-					".sub"
-				],
-				"configuration": "./language-configuration.json"
-			}
-		],
-		"grammars": [
-			{
-				"language": "subtitles",
-				"scopeName": "source.subtitles",
-				"path": "./syntaxes/subtitles.tmLanguage.json"
-			}
-		],
-		"commands": [
-			{
-				"command": "subtitles.shift",
-				"title": "Subtitles: Shift"
-			},
-			{
-				"command": "subtitles.renumber",
-				"title": "Subtitles: Renumber"
-			},
-			{
-				"command": "subtitles.reorderBySequence",
-				"title": "Subtitles: Reorder by Sequence"
-			},
-			{
-				"command": "subtitles.reorderByTimestamp",
-				"title": "Subtitles: Reorder by Timestamp"
-			},
-			{
-				"command": "subtitles.linearCorrection",
-				"title": "Subtitles: Linear Correction"
-			},
-			{
-				"command": "subtitles.convertTimeFormat",
-				"title": "Subtitles: Convert Time Format"
-			},
-			{
-				"command": "subtitles.translate",
-				"title": "Subtitles: Translate"
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./ && cpx \"src/**/*.json\" out",
-		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile && npm run lint",
-		"lint": "eslint src --ext ts",
-		"test": "npm run compile && node ./out/test/runTests.js",
-		"package": "vsce package",
-		"publish": "vsce publish"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.1.3",
-		"@types/mocha": "^8.2.2",
-		"@types/node": "^15.3.0",
-		"@typescript-eslint/eslint-plugin": "^4.24.0",
-		"@typescript-eslint/parser": "^4.24.0",
-		"mocha": "^8.4.0",
-		"glob": "^7.1.7",
-		"cpx2": "^3.0.0",
-		"eslint": "^7.26.0",
-		"tslint": "^6.1.3",
-		"typescript": "^4.2.4",
-		"@types/vscode": "^1.25.0",
-		"vscode-test": "^1.5.2",
-		"vsce": "^2.9.1"
-	},
-	"__metadata": {
-		"id": "04738eb6-00d0-4791-a5ae-09d789fa2a62",
-		"publisherDisplayName": "Peter Prikryl",
-		"publisherId": "414f75b7-db6e-4ae1-aeb8-0f12cc3a101b",
-		"isPreReleaseVersion": false
-	}
+  "name": "subtitles-editor",
+  "icon": "res/icon.png",
+  "displayName": "Subtitles Editor",
+  "description": "Edit subtitles in SRT, WebVTT, and SBV in VS Code.",
+  "version": "1.1.7",
+  "publisher": "pepri",
+  "license": "MIT",
+  "repository": "https://github.com/pepri/subtitles-editor.git",
+  "engines": {
+    "vscode": "^1.25.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:subtitles.shift",
+    "onCommand:subtitles.renumber",
+    "onCommand:subtitles.reorderBySequence",
+    "onCommand:subtitles.reorderByTimestamp",
+    "onCommand:subtitles.linearCorrection",
+    "onCommand:subtitles.convertTimeFormat",
+    "onCommand:subtitles.translate"
+  ],
+  "main": "./out/extension",
+  "contributes": {
+    "languages": [
+      {
+        "id": "subtitles",
+        "aliases": [
+          "Subtitles",
+          "SubRip Text",
+          "subrip",
+          "Web Video Text Tracks",
+          "WebVTT",
+          "vtt",
+          "SubViewer",
+          "sub"
+        ],
+        "extensions": [
+          ".srt",
+          ".vtt",
+          ".sbv",
+          ".sub"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "subtitles",
+        "scopeName": "source.subtitles",
+        "path": "./syntaxes/subtitles.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "subtitles.shift",
+        "title": "Subtitles: Shift",
+        "icon": "./res/arrow-clockwise.svg"
+      },
+      {
+        "command": "subtitles.renumber",
+        "title": "Subtitles: Renumber",
+        "icon": "./res/123.svg"
+      },
+      {
+        "command": "subtitles.reorderBySequence",
+        "title": "Subtitles: Reorder by Sequence",
+        "icon": "./res/1-circle.svg"
+      },
+      {
+        "command": "subtitles.reorderByTimestamp",
+        "title": "Subtitles: Reorder by Timestamp",
+        "icon": "./res/watch.svg"
+      },
+      {
+        "command": "subtitles.linearCorrection",
+        "title": "Subtitles: Linear Correction",
+        "icon": "./res/clock-history.svg"
+      },
+      {
+        "command": "subtitles.convertTimeFormat",
+        "title": "Subtitles: Convert Time Format"
+      },
+      {
+        "command": "subtitles.translate",
+        "title": "Subtitles: Translate",
+        "icon": "./res/globe.svg"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "subtitles.shift",
+          "when": "resourceLangId == subtitles",
+          "group": "navigation"
+        },
+        {
+          "command": "subtitles.renumber",
+          "when": "resourceLangId == subtitles",
+          "group": "navigation"
+        },
+        {
+          "command": "subtitles.reorderBySequence",
+          "when": "resourceLangId == subtitles",
+          "group": "navigation"
+        },
+        {
+          "command": "subtitles.reorderByTimestamp",
+          "when": "resourceLangId == subtitles",
+          "group": "navigation"
+        },
+        {
+          "command": "subtitles.linearCorrection",
+          "when": "resourceLangId == subtitles",
+          "group": "navigation"
+        },
+        {
+          "command": "subtitles.convertTimeFormat",
+          "when": "resourceLangId == subtitles",
+          "group": "navigation"
+        },
+        {
+          "command": "subtitles.translate",
+          "when": "resourceLangId == subtitles",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./ && cpx \"src/**/*.json\" out",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "npm run compile && node ./out/test/runTests.js",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "^15.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.24.0",
+    "@typescript-eslint/parser": "^4.24.0",
+    "mocha": "^8.4.0",
+    "glob": "^7.1.7",
+    "cpx2": "^3.0.0",
+    "eslint": "^7.26.0",
+    "tslint": "^6.1.3",
+    "typescript": "^4.2.4",
+    "@types/vscode": "^1.25.0",
+    "vscode-test": "^1.5.2",
+    "vsce": "^2.9.1"
+  },
+  "__metadata": {
+    "id": "04738eb6-00d0-4791-a5ae-09d789fa2a62",
+    "publisherDisplayName": "Peter Prikryl",
+    "publisherId": "414f75b7-db6e-4ae1-aeb8-0f12cc3a101b",
+    "isPreReleaseVersion": false
+  }
 }
