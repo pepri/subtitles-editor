@@ -4,7 +4,11 @@ All notable changes to the "subtitles-editor" extension are documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [1.1.6] - 2021-07-13
+## [1.1.8] - 2026-10-05
+
+- Update the API for translation.
+
+## [1.1.7] - 2022-06-16
 
 - Added option to sort the frames by timestamp.
 

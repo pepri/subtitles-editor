@@ -1,9 +1,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import * as https from 'https';
 import * as languages from './languages.json';
-import { URL } from 'url';
 import { Frame } from './model/Frame';
 import { TimeLine } from './model/TimeLine';
 import { Time, TIME_REGEX, TIME_TAG_REGEX } from './model/Time';
@@ -389,7 +387,14 @@ async function translate() {
 		}
 	}
 
-	const translatedLines = await translateLines(language, originalLines);
+	let translatedLines: string[];
+	try {
+		translatedLines = await translateLines(language, originalLines);
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		vscode.window.showErrorMessage(`Translation failed: ${message}`);
+		return false;
+	}
 	while (true) {
 		const lineIndex = lineIndexes.shift();
 		const translatedLine = translatedLines.shift();
@@ -406,9 +411,18 @@ async function translate() {
 }
 
 async function translateText(language: string, text: string): Promise<string> {
-	const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${encodeURIComponent(language)}&dt=t&q=${encodeURIComponent(text)}`;
-	const json = JSON.parse(await httpGet(url));
-	return json[0].map((x: any[]) => x[0]).join('');
+	const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=${encodeURIComponent(language)}&q=${encodeURIComponent(text)}`;
+	const response = await fetch(url, {
+		headers: {
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36'
+		}
+	});
+	if (!response.ok) {
+		throw new Error(`Translation request failed with status ${response.status}`);
+	}
+	const json = JSON.parse(await response.text());
+	return json[0][0];
 }
 
 async function translateLines(language: string, originalLines: string[]): Promise<string[]> {
@@ -430,31 +444,6 @@ async function translateLines(language: string, originalLines: string[]): Promis
 	Array.prototype.push.apply(result, translatedText.split('\n'));
 	return result.map(x => x.replace(/(<)(\/?)\s*([bi])\s*(>)/gi, '$1$2$3$4'));
 }
-
-async function httpGet(url: string): Promise<string> {
-	return new Promise<string>((resolve, reject) => {
-		const uri = new URL(url);
-		const opts = {
-			hostname: uri.hostname,
-			port: uri.port || 443,
-			path: uri.pathname + uri.search,
-			headers: {
-				// eslint-disable-next-line @typescript-eslint/naming-convention
-				'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36'
-			}
-		};
-		https.get(opts, res => {
-			if (res.statusCode !== 200) {
-				reject(new Error(``));
-			}
-			let body = '';
-			res.setEncoding('utf8');
-			res.on('data', d => body += d);
-			res.on('end', () => resolve(body));
-		});
-	});
-}
-
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('subtitles.shift', shift));
 	context.subscriptions.push(vscode.commands.registerCommand('subtitles.renumber', renumber));
