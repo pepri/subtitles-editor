@@ -3,5 +3,6 @@
 out/test/**
 out/**/*.map
 src/**
+eslint.config.js
 tsconfig.json
 package-lock.json
